@@ -11,15 +11,19 @@ const GameScreen = () => {
   const gameFunc = (id) => {
     if (isItX) {
       let newArr = [...dataSet]
-      newArr[id] = 'X'
+      if (newArr[id] == '') {
+        newArr[id] = 'X'
+        setIsItX(!isItX)
+      }
       setDataSet(newArr)
     } else {
       let newArr = [...dataSet]
-      newArr[id] = 'O'
+      if (newArr[id] == '') {
+        newArr[id] = 'O'
+        setIsItX(!isItX)
+      }
       setDataSet(newArr)
     }
-    setIsItX(!isItX)
-    console.log(dataSet)
   }
   return (
     <div className='container'>
