@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react'
+import io from 'socket.io-client'
 import './GameScreen.css'
+const socket = io(`http://localhost:4000`)
+
 const GameScreen = () => {
+  // const [socket, setSocket] = useState(null)
+
   const [isItX, setIsItX] = useState(true)
   const reset = () => {
     //reset functionality to be added
@@ -52,7 +57,7 @@ const GameScreen = () => {
     }
   }
 
-  const gameFunc = (id) => {
+  const gameFunc = (id, playFromOtherPlayer) => {
     let newArr = [...dataSet]
     if (gameOver) {
       return
@@ -69,46 +74,56 @@ const GameScreen = () => {
         newArr[id] = 'O'
       }
     }
+
+    if (!playFromOtherPlayer) {
+      socket.emit('played', id)
+    }
+
     setIsItX(!isItX)
     setDataSet(newArr)
 
     findWinner()
     checkIsTie()
   }
+
   useEffect(() => {
+    socket.on('played', (id) => {
+      console.log('Received id is : ', id)
+      gameFunc(id, true)
+    })
     findWinner()
     checkIsTie()
     // console.log('winner:' + winner + ' draw:' + isTie)
-  }, [dataSet, gameOver, isTie])
+  }, [dataSet, gameOver, isTie, socket])
   return (
     <div className='container'>
       <h1>MultiPlayer (hopefully) Tic-Tac-Toe</h1>
       <div className='gameArea'>
-        <div id='block_0' className='block' onClick={() => gameFunc(0)}>
+        <div id='block_0' className='block' onClick={() => gameFunc(0, false)}>
           {dataSet[0]}
         </div>
-        <div id='block_1' className='block' onClick={() => gameFunc(1)}>
+        <div id='block_1' className='block' onClick={() => gameFunc(1, false)}>
           {dataSet[1]}
         </div>
-        <div id='block_2' className='block' onClick={() => gameFunc(2)}>
+        <div id='block_2' className='block' onClick={() => gameFunc(2, false)}>
           {dataSet[2]}
         </div>
-        <div id='block_3' className='block' onClick={() => gameFunc(3)}>
+        <div id='block_3' className='block' onClick={() => gameFunc(3, false)}>
           {dataSet[3]}
         </div>
-        <div id='block_4' className='block' onClick={() => gameFunc(4)}>
+        <div id='block_4' className='block' onClick={() => gameFunc(4, false)}>
           {dataSet[4]}
         </div>
-        <div id='block_5' className='block' onClick={() => gameFunc(5)}>
+        <div id='block_5' className='block' onClick={() => gameFunc(5, false)}>
           {dataSet[5]}
         </div>
-        <div id='block_6' className='block' onClick={() => gameFunc(6)}>
+        <div id='block_6' className='block' onClick={() => gameFunc(6, false)}>
           {dataSet[6]}
         </div>
-        <div id='block_7' className='block' onClick={() => gameFunc(7)}>
+        <div id='block_7' className='block' onClick={() => gameFunc(7, false)}>
           {dataSet[7]}
         </div>
-        <div id='block_8' className='block' onClick={() => gameFunc(8)}>
+        <div id='block_8' className='block' onClick={() => gameFunc(8, false)}>
           {dataSet[8]}
         </div>
       </div>
