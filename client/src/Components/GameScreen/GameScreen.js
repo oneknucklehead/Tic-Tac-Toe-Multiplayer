@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import io from 'socket.io-client'
 import './GameScreen.css'
-const socket = io(`http://localhost:4000`)
+const socket = io.connect(`http://localhost:4000`)
 
 const GameScreen = () => {
-  // const [socket, setSocket] = useState(null)
-
   const [isItX, setIsItX] = useState(true)
+  const [dataSet, setDataSet] = useState(['', '', '', '', '', '', '', '', ''])
+  const [gameOver, setGameOver] = useState(false)
+  const [winner, setWinner] = useState('')
+  const [isTie, setIsTie] = useState(false)
+
   const reset = () => {
-    //reset functionality to be added
     setDataSet(['', '', '', '', '', '', '', '', ''])
     setIsItX(true)
     setGameOver(false)
     setWinner('')
     setIsTie(false)
+    window.location.reload()
     console.log('reset')
   }
-  const [dataSet, setDataSet] = useState(['', '', '', '', '', '', '', '', ''])
-  const [gameOver, setGameOver] = useState(false)
-  const [winner, setWinner] = useState('')
-  const [isTie, setIsTie] = useState(false)
   const checkIsTie = () => {
     if (gameOver) {
       return
@@ -64,22 +63,23 @@ const GameScreen = () => {
     }
     if (isItX) {
       if (newArr[id] == '') {
-        newArr[id] = 'X'
-        // setIsItX(!isItX)
+        newArr[id] = `X`
+        setIsItX(!isItX)
       }
       // setDataSet(newArr)
     } else {
       // let newArr = [...dataSet]
       if (newArr[id] == '') {
         newArr[id] = 'O'
+        setIsItX(!isItX)
       }
     }
 
     if (!playFromOtherPlayer) {
       socket.emit('played', id)
     }
-
-    setIsItX(!isItX)
+    // if(newArr[id])
+    // setIsItX(!isItX)
     setDataSet(newArr)
 
     findWinner()
@@ -93,45 +93,95 @@ const GameScreen = () => {
     })
     findWinner()
     checkIsTie()
+    return function cleanup() {
+      //shut down connnection instance
+      socket.off()
+    }
     // console.log('winner:' + winner + ' draw:' + isTie)
   }, [dataSet, gameOver, isTie, socket])
   return (
-    <div className='container'>
-      <h1>MultiPlayer (hopefully) Tic-Tac-Toe</h1>
-      <div className='gameArea'>
-        <div id='block_0' className='block' onClick={() => gameFunc(0, false)}>
-          {dataSet[0]}
+    <>
+      {gameOver ? (
+        <div className='container'>
+          <div className='wrapper'>
+            {gameOver && <h2>{winner} WINS!</h2>}
+            {!gameOver && isTie && <h2>Ugh! It's a TIE!</h2>}
+            {(gameOver || isTie) && (
+              <button onClick={() => reset()}>Play Again?</button>
+            )}
+          </div>
         </div>
-        <div id='block_1' className='block' onClick={() => gameFunc(1, false)}>
-          {dataSet[1]}
+      ) : (
+        <div className='container'>
+          <h1>MultiPlayer Tic-Tac-Toe</h1>
+          <div className='gameArea'>
+            <div
+              id='block_0'
+              className='block'
+              onClick={() => gameFunc(0, false)}
+            >
+              {dataSet[0]}
+            </div>
+            <div
+              id='block_1'
+              className='block'
+              onClick={() => gameFunc(1, false)}
+            >
+              {dataSet[1]}
+            </div>
+            <div
+              id='block_2'
+              className='block'
+              onClick={() => gameFunc(2, false)}
+            >
+              {dataSet[2]}
+            </div>
+            <div
+              id='block_3'
+              className='block'
+              onClick={() => gameFunc(3, false)}
+            >
+              {dataSet[3]}
+            </div>
+            <div
+              id='block_4'
+              className='block'
+              onClick={() => gameFunc(4, false)}
+            >
+              {dataSet[4]}
+            </div>
+            <div
+              id='block_5'
+              className='block'
+              onClick={() => gameFunc(5, false)}
+            >
+              {dataSet[5]}
+            </div>
+            <div
+              id='block_6'
+              className='block'
+              onClick={() => gameFunc(6, false)}
+            >
+              {dataSet[6]}
+            </div>
+            <div
+              id='block_7'
+              className='block'
+              onClick={() => gameFunc(7, false)}
+            >
+              {dataSet[7]}
+            </div>
+            <div
+              id='block_8'
+              className='block'
+              onClick={() => gameFunc(8, false)}
+            >
+              {dataSet[8]}
+            </div>
+          </div>
         </div>
-        <div id='block_2' className='block' onClick={() => gameFunc(2, false)}>
-          {dataSet[2]}
-        </div>
-        <div id='block_3' className='block' onClick={() => gameFunc(3, false)}>
-          {dataSet[3]}
-        </div>
-        <div id='block_4' className='block' onClick={() => gameFunc(4, false)}>
-          {dataSet[4]}
-        </div>
-        <div id='block_5' className='block' onClick={() => gameFunc(5, false)}>
-          {dataSet[5]}
-        </div>
-        <div id='block_6' className='block' onClick={() => gameFunc(6, false)}>
-          {dataSet[6]}
-        </div>
-        <div id='block_7' className='block' onClick={() => gameFunc(7, false)}>
-          {dataSet[7]}
-        </div>
-        <div id='block_8' className='block' onClick={() => gameFunc(8, false)}>
-          {dataSet[8]}
-        </div>
-      </div>
-      <h3 className='winner'></h3>
-      {gameOver && <h2>Winner is {winner}</h2>}
-      {!gameOver && isTie && <h2>Ugh! The game ended in a draw</h2>}
-      {(gameOver || isTie) && <button onClick={() => reset()}>Reset</button>}
-    </div>
+      )}
+    </>
   )
 }
 
