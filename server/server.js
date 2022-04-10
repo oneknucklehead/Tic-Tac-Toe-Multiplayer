@@ -9,8 +9,11 @@ const io = require('socket.io')(server, {
 
 io.on('connection', (socket) => {
   socket.on('played', (id) => {
-    console.log('from server ', id)
     socket.broadcast.emit('played', id)
+  })
+  socket.on('reset', () => {
+    // console.log('reset from server')
+    socket.broadcast.emit('reset')
   })
 })
 

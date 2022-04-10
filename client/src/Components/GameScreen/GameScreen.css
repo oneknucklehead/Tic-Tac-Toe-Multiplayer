@@ -72,6 +72,9 @@
     cursor: pointer;
     background: rgba(0, 0, 0, 0.1);
   }
+  .block:active{
+    border: 1px solid rgba(136, 136, 136, 0.349);
+  }
   
   /* .occupied:hover {
     background: #ff3a3a;

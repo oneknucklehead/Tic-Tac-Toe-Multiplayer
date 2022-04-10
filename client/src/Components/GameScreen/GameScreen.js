@@ -16,8 +16,9 @@ const GameScreen = () => {
     setGameOver(false)
     setWinner('')
     setIsTie(false)
-    window.location.reload()
-    console.log('reset')
+    // window.location.reload()
+    socket.emit('reset')
+    // console.log('reset')
   }
   const checkIsTie = () => {
     if (gameOver) {
@@ -88,8 +89,11 @@ const GameScreen = () => {
 
   useEffect(() => {
     socket.on('played', (id) => {
-      console.log('Received id is : ', id)
       gameFunc(id, true)
+    })
+    socket.on('reset', () => {
+      reset()
+      window.location.reload()
     })
     findWinner()
     checkIsTie()
